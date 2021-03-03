@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService extends UserDetailsService{
 	User save(UserRegistrationDto registrationDto);
+	User save(User user);
 	void update(String newPassword, Long id);
 	boolean updatePassword(String lastPassword, String newPassword, String email);
 	User findByUsername(String username);

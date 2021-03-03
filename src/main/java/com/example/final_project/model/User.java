@@ -13,14 +13,20 @@ public class User {
 	
 	@Column(name = "first_name")
 	private String firstName;
-	
+
 	@Column(name = "last_name")
 	private String lastName;
 	
 	private String email;
 	
 	private String password;
-	
+
+	private String groupName;
+
+	private int age;
+
+	private String interests;
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "users_roles",
@@ -43,6 +49,19 @@ public class User {
 		this.password = password;
 		this.roles = roles;
 	}
+
+	public User(String firstName, String lastName, String email, String password, String groupName, int age, String interests, Collection<Role> roles) {
+		super();
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+		this.password = password;
+		this.groupName = groupName;
+		this.age = age;
+		this.interests = interests;
+		this.roles = roles;
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -80,4 +99,27 @@ public class User {
 		this.roles = roles;
 	}
 
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public int getAge() {
+		return age;
+	}
+
+	public void setAge(int age) {
+		this.age = age;
+	}
+
+	public String getInterests() {
+		return interests;
+	}
+
+	public void setInterests(String interests) {
+		this.interests = interests;
+	}
 }

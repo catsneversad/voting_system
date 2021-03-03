@@ -47,4 +47,30 @@ public class UserController {
         }
         return "success";
     }
+
+    @GetMapping("/updateInfo")
+    @ResponseBody
+    public String updateInfo(@RequestParam(name = "email") String email,
+                                 @RequestParam(name = "firstName") String firstName,
+                                 @RequestParam(name = "secondName") String secondName,
+                                 @RequestParam(name = "age") String age,
+                                 @RequestParam(name = "interest") String interest) {
+
+        User user = userService.findByUsername(email);
+        if (!firstName.equals("")) {
+            user.setFirstName(firstName);
+        }
+        if (!secondName.equals("")) {
+            user.setLastName(secondName);
+        }
+        if (!age.equals("")) {
+            user.setAge(Integer.parseInt(age));
+        }
+        if (!interest.equals("")) {
+            user.setInterests(interest);
+        }
+        System.out.println(firstName + ' ' + secondName + ' ' + age + ' ' + interest);
+        userService.save(user);
+        return "success";
+    }
 }
