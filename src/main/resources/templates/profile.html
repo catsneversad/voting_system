@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile</title>
+
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed"
+                    data-toggle="collapse" data-target="#navbar" aria-expanded="false"
+                    aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#" th:href="@{/}">Vote</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<br><br>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+
+            <!-- success message -->
+
+            <h1>Update password</h1>
+            <input type="hidden" name="email" id="email" th:value="${#authentication.getName()}">
+            <div class="form-group">
+                <label class="control-label" for="currentPassword"> Current password </label>
+                <input type="password" id="currentPassword" class="form-control" required autofocus="autofocus"/>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="newPassword"> New password </label> <input
+                    type="password" id="newPassword" class="form-control" required autofocus="autofocus"/>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label" for="repeatPassword"> Repeat new password </label> <input
+                    type="password" id="repeatPassword" class="form-control" required autofocus="autofocus"/>
+            </div>
+            <button id = "submitUpdatePassword" class="btn btn-success">Update password</button>
+            <script>
+                $('#submitUpdatePassword').click(function () {
+                    currentEmail = $("#email").val();
+                    current_password = $("#currentPassword").val();
+                    newPassword = $("#newPassword").val();
+                    repeat_password = $("#repeatPassword").val()
+
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/updatePassword",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data:
+                            {
+                                "email": currentEmail,
+                                "currentPassword": current_password,
+                                "newPassword": newPassword,
+                                "repeatNewPassword": repeat_password,
+                            },
+
+                        success: function (resultData) {
+                            if (resultData == "success") {
+                                alert(resultData)
+                                location.replace("/")
+                            } else {
+                                alert("Please check your inputted data")
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data");
+                        },
+                        timeout: 120000,
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
