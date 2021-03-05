@@ -12,8 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,6 +53,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllUsers() {
+        List<User> allUsers = userRepository.findAll();
+        List<User> nonAdmins = new ArrayList<>();
+        for (User curUser: allUsers) {
+            if (!isAdmin(curUser)) {
+                nonAdmins.add(curUser);
+            }
+        }
+        return nonAdmins;
+    }
+
+    @Override
+    public List<User> getAllAdmins() {
+        List<User> allUsers = userRepository.findAll();
+        List<User> admins = new ArrayList<>();
+        for (User curUser: allUsers) {
+            if (isAdmin(curUser)) {
+                admins.add(curUser);
+            }
+        }
+        return admins;
+    }
+
+    @Override
+    public boolean isAdmin (User user) {
+        for (Role userRoles: user.getRoles()) {
+            if (userRoles.getName().equals("ROLE_ADMIN"))
+                return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean updatePassword(String lastPassword, String newPassword, String email) {
         User curUser = findByUsername(email);
 
@@ -72,6 +107,23 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Override
+    public void makeAdmin(User editUser) {
+        List<Role> userRoles = (List<Role>) editUser.getRoles();
+        userRoles.add(new Role("ROLE_ADMIN"));
+        editUser.setRoles(userRoles);
+        userRepository.save(editUser);
+    }
+
+    @Override
+    public void makeUser(User editUser) {
+        List<Role> userRoles = (List<Role>) editUser.getRoles();
+        userRoles.clear();
+        userRoles.add(new Role("ROLE_USER"));
+        editUser.setRoles(userRoles);
+        userRepository.save(editUser);
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -91,6 +143,12 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("Invalid username or password.");
         }
+        return user;
+    }
+
+    @Override
+    public User findUserById(Long id) {
+        User user = userRepository.findUserById(id);
         return user;
     }
 

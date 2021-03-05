@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin panel</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
+                </li>
+            </ul>
+            <div sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></div>
+        </div>
+    </div>
+</nav>
+
+<input type="hidden" name="email" id="email" th:value="${#authentication.getName()}">
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>My polls</h1>
+            <table class="table">
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Title</th>
+                </tr>
+                </thead>
+                <tbody id="myPolls">
+                </tbody>
+            </table>
+            <script>
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/getMyPolls",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+
+                    success: function (resultData) {
+                        if (resultData != "") {
+                            displayMyPolls(resultData);
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+                const displayMyPolls = (characters) => {
+                    id = 0;
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.title}
+                                    </td>
+                                    <td>
+                                        <a href="http://127.0.0.1:8080/admin/poll/${character.id}">
+                                            <button type="button" class="btn btn-primary">
+                                                <i class="fa fa-eye"></i>
+                                            </button>
+                                        </a>
+                                        <button type="button" class="btn btn-danger" onclick="deletePoll(${character.id})">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                    myPolls.innerHTML = htmlString;
+                };
+
+                function deletePoll(id) {
+                    if (confirm("Do you really want to delete this poll?")) {
+                        jQuery.ajax({
+                            url: "http://127.0.0.1:8080/deletePoll/"+id,
+                            type: 'GET',
+                            contentType: 'application/json; charset=utf-8',
+
+                            success: function (resultData) {
+                                if (resultData != "") {
+                                    location.replace("/admin/")
+                                }
+                            },
+                            error: function () {
+                                alert("Please check your inputted data");
+                            },
+                            timeout: 120000,
+                        });
+                    }
+                }
+            </script>
+        </div>
+        <div class="col"></div>
+        <div class="col">
+            <h1>Create poll</h1>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Poll title</span>
+                </div>
+                <input type="text" id="pollTitle" class="form-control" required autofocus="autofocus"/>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="createPoll">Create Poll</button>
+                </div>
+            </div>
+            <script>
+                $('#createPoll').click(function () {
+                    currentEmail = $("#email").val();
+                    poll_title = $("#pollTitle").val();
+
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/createPoll",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data:
+                            {
+                                "email": currentEmail,
+                                "title": poll_title
+                            },
+
+                        success: function (resultData) {
+                            if (resultData == "success") {
+                                alert(resultData)
+                                location.replace("/admin/")
+                            } else {
+                                alert("Please check your inputted data")
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data");
+                        },
+                        timeout: 120000,
+                    });
+                });
+            </script>
+        </div>
+    </div>
+    <br><br>
+    <div class="row">
+        <div class="col">
+            <h1>Users</h1>
+            <table class="table">
+                <thead class="thead">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">User email</th>
+                    </tr>
+                </thead>
+                <tbody id="users"></tbody>
+            </table>
+            <script>
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/getAllUsers",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+
+                    success: function (resultData) {
+                        if (resultData != "") {
+                            displayUsers(resultData);
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+                const displayUsers = (characters) => {
+                    id = 0;
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.email}
+                                    </td>
+                                    <td>
+                                        <a href="http://127.0.0.1:8080/makeAdmin/${character.id}">
+                                            <button type="button" class="btn btn-primary">Make Admin</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                    users.innerHTML = htmlString;
+                };
+            </script>
+        </div>
+        <div class="col"></div>
+        <div class="col">
+            <h1>Admins</h1>
+            <table class="table">
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">User email</th>
+                </tr>
+                </thead>
+                <tbody id="admins"></tbody>
+            </table>
+            <script>
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/getAllAdmins",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+
+                    success: function (resultData) {
+                        if (resultData != "") {
+                            displayAdmins(resultData);
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+                const displayAdmins = (characters) => {
+                    id = 0;
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.email}
+                                    </td>
+                                    <td>
+                                        <a href="http://127.0.0.1:8080/makeUser/${character.id}">
+                                            <button type="button" class="btn btn-primary">Make User</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                    admins.innerHTML = htmlString;
+                };
+            </script>
+        </div>
+    </div>
+</div>
+</body>
+</html>

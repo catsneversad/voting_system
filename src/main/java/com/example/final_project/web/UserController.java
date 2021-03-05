@@ -1,6 +1,8 @@
 package com.example.final_project.web;
 
 
+import com.example.final_project.model.Poll;
+import com.example.final_project.model.Role;
 import com.example.final_project.model.User;
 import com.example.final_project.service.UserService;
 import com.example.final_project.web.dto.UpdatePasswordDto;
@@ -12,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -46,6 +51,44 @@ public class UserController {
             return null;
         }
         return "success";
+    }
+
+    @GetMapping("/getAllUsers")
+    @ResponseBody
+    public List<User> getAllUsers(@AuthenticationPrincipal UserDetails currentUser) {
+        User user = userService.findByUsername(currentUser.getUsername());
+        if (userService.isAdmin(user)) {
+            return userService.getAllUsers();
+        } else {
+            return new LinkedList<>();
+        }
+    }
+
+    @GetMapping("/getAllAdmins")
+    @ResponseBody
+    public List<User> getAllAdmins(@AuthenticationPrincipal UserDetails currentUser) {
+        User user = userService.findByUsername(currentUser.getUsername());
+        if (userService.isAdmin(user)) {
+            return userService.getAllAdmins();
+        } else {
+            return new LinkedList<>();
+        }
+    }
+
+    @GetMapping("/makeAdmin/{id}")
+    public String makeAdmin(@AuthenticationPrincipal UserDetails currentUser,
+                            @PathVariable("id") Long id) {
+        User editUser = userService.findUserById (id);
+        userService.makeAdmin (editUser);
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/makeUser/{id}")
+    public String makeUser(@AuthenticationPrincipal UserDetails currentUser,
+                            @PathVariable("id") Long id) {
+        User editUser = userService.findUserById (id);
+        userService.makeUser (editUser);
+        return "redirect:/admin";
     }
 
     @GetMapping("/updateInfo")
