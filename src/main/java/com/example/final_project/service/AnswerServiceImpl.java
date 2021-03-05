@@ -1,6 +1,7 @@
 package com.example.final_project.service;
 
 import com.example.final_project.model.Answer;
+import com.example.final_project.model.Poll;
 import com.example.final_project.repository.AnswerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<Answer> getAnswersByPollId(Long pollId) {
-        return answerRepository.findAnswersByPollId(pollId);
+    public List<Answer> getAnswersByPollId(Poll poll) {
+        return answerRepository.findAllByPoll(poll);
     }
 }

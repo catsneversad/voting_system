@@ -1,10 +1,15 @@
 package com.example.final_project.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 @Entity
-@Table(name = "poll")
-public class Poll {
+@Table(name = "polls")
+public class Poll implements Serializable {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
@@ -12,6 +17,10 @@ public class Poll {
     private String title;
     @Column(name="author_id")
     private Long author_id;
+
+    @OneToMany(mappedBy = "poll", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private Collection<Answer> answers;
 
     public Poll() {
     }
@@ -43,5 +52,13 @@ public class Poll {
 
     public void setAuthor_id(Long author_id) {
         this.author_id = author_id;
+    }
+
+    public Collection<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(Collection<Answer> answers) {
+        this.answers = answers;
     }
 }

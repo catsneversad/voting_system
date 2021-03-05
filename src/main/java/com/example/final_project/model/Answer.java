@@ -1,10 +1,11 @@
 package com.example.final_project.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
-@Table(name = "answer")
-public class Answer {
+@Table(name = "answers")
+public class Answer implements Serializable {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private Long id;
@@ -12,16 +13,19 @@ public class Answer {
     private String value;
     @Column(name="rate")
     private Long rate;
-    @Column(name="poll_id")
-    private Long poll_id;
+
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "poll_id", nullable = false)
+    private Poll poll;
 
     public Answer() {
     }
 
-    public Answer(String value, Long rate, Long poll_id) {
+    public Answer(String value, Long rate, Poll poll) {
         this.value = value;
         this.rate = rate;
-        this.poll_id = poll_id;
+        this.poll = poll;
     }
 
     public Long getId() {
@@ -48,11 +52,4 @@ public class Answer {
         this.rate = rate;
     }
 
-    public Long getPoll_id() {
-        return poll_id;
-    }
-
-    public void setPoll_id(Long poll_id) {
-        this.poll_id = poll_id;
-    }
 }

@@ -69,7 +69,7 @@ public class AdminPanelController {
                                @RequestParam(name = "rate") String answerRate,
                                @RequestParam(name = "pollId") String pollId) {
 
-        Answer answer = new Answer(answerValue, (long) Integer.parseInt(answerRate), (long) Integer.parseInt(pollId));
+        Answer answer = new Answer(answerValue, (long) Integer.parseInt(answerRate), pollService.getPollById( (long) Integer.parseInt(pollId)));
         answerService.save(answer);
         return "success";
     }

@@ -11,5 +11,5 @@ import java.util.List;
 public interface AnswerService {
     Answer save(Answer answer);
     Answer getAnswerById(Long id);
-    List<Answer> getAnswersByPollId(Long pollId);
+    List<Answer> getAnswersByPollId(Poll poll);
 }
