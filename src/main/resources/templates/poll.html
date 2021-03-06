@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin panel</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
+                </li>
+            </ul>
+            <div sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></div>
+        </div>
+    </div>
+</nav>
+
+<input type="hidden" name="email" id="pollId" th:value="${currentPoll.getId()}">
+
+<br><br>
+<div class="container">
+    <div class="row">
+        <h3>
+            Title: '<span th:text="${currentPoll.getTitle()}">title</span>'
+        </h3>
+        <h5 th:text="${pollAuthor}">pollAuthor</h5>
+        <ul id="content" class="list-group">
+
+        </ul>
+        <button class="btn btn-primary" id="addOption">Add option</button>
+        <button class="btn btn-success" id="savePoll">Save Poll</button>
+
+    </div>
+    <script>
+        mainId = 0;
+        currentPollId = $("#pollId").val();
+        jQuery.ajax({
+            url: "http://127.0.0.1:8080/getPollAnswers",
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            data:
+                {
+                    "pollId": currentPollId,
+                },
+            success: function (resultData) {
+                if (resultData != "") {
+                    displayPollAnswers(resultData);
+                } else {
+                    while (mainId < 3) {
+                        displayOption();
+                    }
+                }
+            },
+            error: function () {
+                alert("Please check your inputted data");
+            },
+            timeout: 120000,
+        });
+
+        const displayPollAnswers = (characters) => {
+            const htmlString = characters
+                .map((character) => {
+                    mainId += 1;
+                    $("#content").append('<li class="list-group-item">\n' +
+                        '                    <div class="form-group">\n' +
+                        '                        <label for="optionNumber' + mainId + '">Option</label>\n' +
+                        '                        <input class="form-control" id="optionNumber' + mainId + '" value="' + character.value + '"\n' +
+                        '                        <button class="btn btn-default btn-xs pull-right remove-item">\n' +
+                        '                    </div>\n' +
+                        '                </li>');
+                });
+        };
+
+        function displayOption() {
+            if (mainId < 10) {
+                $("#content").append('<li class="list-group-item">\n' +
+                    '                    <div class="form-group">\n' +
+                    '                        <label for="optionNumber' + mainId + '">Option</label>\n' +
+                    '                        <input class="form-control" id="optionNumber' + mainId + '"placeholder="answer">\n' +
+                    '                    </div>\n' +
+                    '                </li>');
+
+                mainId = mainId + 1;
+            } else {
+                alert("Max 10 options")
+            }
+        }
+
+        $('#savePoll').click(function () {
+            if (confirm("Do you want to save this poll?")) {
+                optionList = [];
+                $('ul li input').each(function(i)
+                {
+                    optionList.push($(this).val());
+                });
+                alert (optionList);
+                optionList.pop();
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/addAnswer",
+                    type: "GET",
+                    contentType: 'application/json; charset=utf-8',
+                    data: {"pollId": currentPollId, "answerList": optionList.toString()},
+
+                    success: function (resultData) {
+                        alert("Poll created")
+                        location.reload()
+                    },
+                    error: function () {
+                        alert("Invalid Input");
+                    },
+                    timeout: 120000,
+                });
+            }
+        })
+
+        $('#addOption').click(function () {
+            displayOption();
+        })
+
+    </script>
+
+</div>
+</body>
+</html>

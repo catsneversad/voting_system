@@ -66,10 +66,9 @@ public class AdminPanelController {
     @GetMapping("/createAnswer")
     @ResponseBody
     public String createAnswer(@RequestParam(name = "value") String answerValue,
-                               @RequestParam(name = "rate") String answerRate,
                                @RequestParam(name = "pollId") String pollId) {
 
-        Answer answer = new Answer(answerValue, (long) Integer.parseInt(answerRate), pollService.getPollById( (long) Integer.parseInt(pollId)));
+        Answer answer = new Answer(answerValue, pollService.getPollById( (long) Integer.parseInt(pollId)));
         answerService.save(answer);
         return "success";
     }
@@ -82,9 +81,6 @@ public class AdminPanelController {
         Answer curAnswer = answerService.getAnswerById((long) Integer.parseInt(answerId));
         if (!answerValue.equals("")) {
             curAnswer.setValue(answerValue);
-        }
-        if (!answerRate.equals("")) {
-            curAnswer.setRate((long) Integer.parseInt(answerRate));
         }
         answerService.save(curAnswer);
         return "success";

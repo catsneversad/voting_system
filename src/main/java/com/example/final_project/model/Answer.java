@@ -11,9 +11,6 @@ public class Answer implements Serializable {
     private Long id;
     @Column(name="value")
     private String value;
-    @Column(name="rate")
-    private Long rate;
-
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "poll_id", nullable = false)
@@ -22,9 +19,8 @@ public class Answer implements Serializable {
     public Answer() {
     }
 
-    public Answer(String value, Long rate, Poll poll) {
+    public Answer(String value, Poll poll) {
         this.value = value;
-        this.rate = rate;
         this.poll = poll;
     }
 
@@ -42,14 +38,6 @@ public class Answer implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public Long getRate() {
-        return rate;
-    }
-
-    public void setRate(Long rate) {
-        this.rate = rate;
     }
 
 }

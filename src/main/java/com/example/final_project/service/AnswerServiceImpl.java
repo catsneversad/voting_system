@@ -29,7 +29,14 @@ public class AnswerServiceImpl implements AnswerService {
     }
 
     @Override
-    public List<Answer> getAnswersByPollId(Poll poll) {
+    public List<Answer> getAnswersByPoll(Poll poll) {
         return answerRepository.findAllByPoll(poll);
     }
+
+    @Override
+    public void delete(Answer answer) {
+        answerRepository.delete(answer);
+    }
+
+
 }
