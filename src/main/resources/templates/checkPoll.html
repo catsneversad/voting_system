@@ -37,31 +37,40 @@
 <br><br>
 
 <input type="hidden" name="email" id="email" th:value="${#authentication.getName()}">
+<input type="hidden" name="pollId" id="pollId" th:value="${currentPoll.getId()}">
+
 
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
-            <h1>All unanswered polls</h1>
+            <h3>
+                Title: '<span th:text="${currentPoll.getTitle()}">title</span>'
+            </h3>
+            <h5 th:text="${pollAuthor}">pollAuthor</h5>
             <table class="table">
                 <thead class="thead">
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">Poll title</th>
-                    <th scope="col">Author</th>
+                    <th scope="col">Option value</th>
+                    <th scope="col">Stats</th>
                 </tr>
                 </thead>
-                <tbody id="content"></tbody>
+                <tbody id="statistics"></tbody>
             </table>
+            <h6 class="pull-right">
+                All number of votes: '<span th:text="${sumOfRate}">sumOfRate</span>'
+            </h6>
             <script>
                 currentEmail = $("#email").val();
+                currentPollId = $("#pollId").val();
                 jQuery.ajax({
-                    url: "http://127.0.0.1:8080/getAllUnansweredPolls",
+                    url: "http://127.0.0.1:8080/getStatisticsOfPoll",
                     type: 'GET',
                     contentType: 'application/json; charset=utf-8',
-                    data: {"email": currentEmail},
+                    data: {"email": currentEmail, "pollId": currentPollId},
                     success: function (resultData) {
                         if (resultData !== "") {
-                            displayPolls(resultData);
+                            displayStatistics(resultData);
                         }
                     },
                     error: function () {
@@ -70,87 +79,40 @@
                     timeout: 120000,
                 });
 
-                const displayPolls = (characters) => {
+                const displayStatistics = (characters) => {
                     id = 0;
                     const htmlString = characters
                         .map((character, id) => {
                             id += 1;
-                            return `
+                            if (character.checked === true) {
+                                return `
+                                <tr class="table-primary">
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.value}
+                                    </td>
+                                    <td>
+                                        ${character.rate}
+                                    </td>
+                                </tr>
+                                `;
+                            }
+                            else {
+                                return `
                                 <tr>
                                     <th scope="row">${id}</th>
                                     <td>
-                                        ${character.title}
+                                        ${character.value}
                                     </td>
                                     <td>
-                                        ${character.authorUsername}
-                                    </td>
-                                    <td>
-                                        <a href="http://127.0.0.1:8080/makeVote/${character.id}">
-                                            <button type="button" class="btn btn-primary">Make Vote</button>
-                                        </a>
+                                        ${character.rate}
                                     </td>
                                 </tr>
-                            `;
+                                `;
+                            }
                         })
                         .join('');
-                    content.innerHTML = htmlString;
-                };
-            </script>
-        </div>
-        <div class="col-md-6 col-md-offset-3">
-            <h1>All answered polls</h1>
-            <table class="table">
-                <thead class="thead">
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Poll title</th>
-                    <th scope="col">Author</th>
-                </tr>
-                </thead>
-                <tbody id="contentAnswered"></tbody>
-            </table>
-            <script>
-                currentEmail = $("#email").val();
-                jQuery.ajax({
-                    url: "http://127.0.0.1:8080/getAllAnsweredPolls",
-                    type: 'GET',
-                    contentType: 'application/json; charset=utf-8',
-                    data: {"email": currentEmail},
-                    success: function (resultData) {
-                        if (resultData !== "") {
-                            displayAnsweredPolls(resultData);
-                        }
-                    },
-                    error: function () {
-                        alert("Please check your inputted data");
-                    },
-                    timeout: 120000,
-                });
-
-                const displayAnsweredPolls = (characters) => {
-                    id = 0;
-                    const htmlString = characters
-                        .map((character, id) => {
-                            id += 1;
-                            return `
-                                <tr>
-                                    <th scope="row">${id}</th>
-                                    <td>
-                                        ${character.title}
-                                    </td>
-                                    <td>
-                                        ${character.authorUsername}
-                                    </td>
-                                    <td>
-                                        <a href="http://127.0.0.1:8080/checkPoll/${character.id}">
-                                            <button type="button" class="btn btn-primary">Check poll statistics</button>
-                                        </a>
-                                    </td>
-                                </tr>
-                            `;
-                        })
-                        .join('');
-                    contentAnswered.innerHTML = htmlString;
+                    statistics.innerHTML = htmlString;
                 };
             </script>
         </div>

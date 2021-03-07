@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+
+    <meta charset="ISO-8859-1">
+    <title>Voting system</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+</head>
+<body>
+<!-- create navigation bar ( header) -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+                aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
+                </li>
+            </ul>
+            <div sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></div>
+        </div>
+    </div>
+</nav>
+<br><br>
+
+<input type="hidden" name="email" id="email" th:value="${#authentication.getName()}">
+<input type="hidden" name="pollId" id="pollId" th:value="${currentPoll.getId()}">
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <h3>
+                Title: '<span th:text="${currentPoll.getTitle()}">title</span>'
+            </h3>
+            <h5 th:text="${pollAuthor}">pollAuthor</h5>
+            <form id="content">
+
+            </form>
+            <button type="submit" class="btn btn-primary" onclick="sendVote()">Submit</button>
+        </div>
+        <script>
+            currentUserId = $("#email").val();
+            currentPollId = $("#pollId").val();
+            jQuery.ajax({
+                url: "http://127.0.0.1:8080/getPollAnswers",
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                data:
+                    {
+                        "pollId": currentPollId,
+                    },
+                success: function (resultData) {
+                    if (resultData != "") {
+                        displayPollAnswers(resultData);
+                    }
+                },
+                error: function () {
+                    alert("Please check your inputted data");
+                },
+                timeout: 120000,
+            });
+
+            function sendVote() {
+                selectedId = document.querySelector('input[name="rate"]:checked').id;
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/saveVote",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    data:
+                        {
+                            "userEmail": currentUserId,
+                            "pollId": currentPollId,
+                            "selectedId": selectedId
+                        },
+                    success: function (resultData) {
+                        if (resultData != "") {
+                            alert(resultData);
+                            location.replace("/");
+                        } else {
+                            alert("Please check your inputted data")
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+            }
+
+            const displayPollAnswers = (characters) => {
+                id = 0;
+                const htmlString = characters
+                    .map((character, id) => {
+                        id += 1;
+                        return `
+                <div class="form-check">
+                    <label class="form-check-label" for="`+character.id+`">
+                        <input type="radio" class="form-check-input" name="rate" id="`+character.id+`" value="`+character.value+`">`+character.value+`
+                    </label>
+                </div>
+                                `;
+                    })
+                    .join('');
+                content.innerHTML = htmlString;
+            };
+        </script>
+    </div>
+</div>
+</body>
+</html>
