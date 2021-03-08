@@ -33,6 +33,10 @@ public class AdminPanelController {
     public String admin(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         User user = userService.findByUsername(currentUser.getUsername());
         model.addAttribute("currentUser", user);
+        if (userService.isAdmin(user))
+            model.addAttribute("isAdmin", true);
+        else
+            model.addAttribute("isAdmin", false);
         return "admin";
     }
 

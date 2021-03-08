@@ -47,6 +47,10 @@ public class PollController {
         model.addAttribute("currentUser", user);
         model.addAttribute("currentPoll", curPoll);
         model.addAttribute("pollAuthor", "Author: " + author.getEmail());
+        if (userService.isAdmin(user))
+            model.addAttribute("isAdmin", true);
+        else
+            model.addAttribute("isAdmin", false);
         return "poll";
     }
 
@@ -66,6 +70,10 @@ public class PollController {
         model.addAttribute("currentUser", user);
         model.addAttribute("currentPoll", curPoll);
         model.addAttribute("pollAuthor", "Author: " + author.getEmail());
+        if (userService.isAdmin(user))
+            model.addAttribute("isAdmin", true);
+        else
+            model.addAttribute("isAdmin", false);
         return "checkPoll";
     }
 

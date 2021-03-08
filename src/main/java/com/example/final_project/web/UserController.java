@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -32,6 +33,10 @@ public class UserController {
     @GetMapping("/profile")
     public String profile(Model model, @AuthenticationPrincipal UserDetails currentUser) {
         User user = userService.findByUsername(currentUser.getUsername());
+        if (userService.isAdmin(user))
+            model.addAttribute("isAdmin", true);
+        else
+            model.addAttribute("isAdmin", false);
         model.addAttribute("currentUser", user);
         return "profile";
     }
@@ -68,8 +73,15 @@ public class UserController {
     @ResponseBody
     public List<User> getAllAdmins(@AuthenticationPrincipal UserDetails currentUser) {
         User user = userService.findByUsername(currentUser.getUsername());
+        List<User> admins = userService.getAllAdmins();
+        List<User> newAdminList = new ArrayList<>();
         if (userService.isAdmin(user)) {
-            return userService.getAllAdmins();
+            for (User to: admins) {
+                if (to != user) {
+                  newAdminList.add(to);
+                }
+            }
+            return newAdminList;
         } else {
             return new LinkedList<>();
         }

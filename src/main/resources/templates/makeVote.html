@@ -29,6 +29,12 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#" th:href="@{/}">Home</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" th:href="@{/profile}">Profile</a>
+                </li>
+                <li th:if="${isAdmin == true}" class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" th:href="@{/admin}">Admin</a>
+                </li>
             </ul>
             <div sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></div>
         </div>
@@ -89,7 +95,8 @@
                     success: function (resultData) {
                         if (resultData != "") {
                             alert(resultData);
-                            location.replace("/");
+                            var newLocation = "http://127.0.0.1:8080/checkPoll/" + currentPollId;
+                            location.replace(newLocation);
                         } else {
                             alert("Please check your inputted data")
                         }
