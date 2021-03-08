@@ -44,6 +44,13 @@
 					<div class="alert alert-info">You've successfully registered
 						to our awesome app!</div>
 				</div>
+				<div th:if="${param.errorMail}">
+					<div class="alert alert-danger">Something gone wrong. Chek your mail</div>
+				</div>
+				<div th:if="${param.errorPassword}">
+					<div class="alert alert-danger">Something gone wrong. Chek your password</div>
+				</div>
+
 
 				<h1>Registration</h1>
 

@@ -47,6 +47,128 @@
 <div class="container">
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
+            <h1>Most Popular unanswered polls</h1>
+            <table class="table">
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Poll title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Rate</th>
+                </tr>
+                </thead>
+                <tbody id="popularUnansweredContent"></tbody>
+            </table>
+            <script>
+                currentEmail = $("#email").val();
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/getPopularUnansweredPolls",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    data: {"email": currentEmail},
+                    success: function (resultData) {
+                        if (resultData !== "") {
+                            displayPopularUnansweredPolls(resultData);
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+
+                const displayPopularUnansweredPolls = (characters) => {
+                    id = 0;
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.title}
+                                    </td>
+                                    <td>
+                                        ${character.authorUsername}
+                                    </td>
+                                    <td>
+                                        ${character.rate}
+                                    </td>
+                                    <td>
+                                        <a href="http://127.0.0.1:8080/makeVote/${character.id}">
+                                            <button type="button" class="btn btn-primary">Make Vote</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                    popularUnansweredContent.innerHTML = htmlString;
+                };
+            </script>
+        </div>
+        <div class="col-md-6 col-md-offset-3">
+            <h1>Most Popular answered polls</h1>
+            <table class="table">
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Poll title</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Rate</th>
+                </tr>
+                </thead>
+                <tbody id="popularAnsweredContent"></tbody>
+            </table>
+            <script>
+                currentEmail = $("#email").val();
+                jQuery.ajax({
+                    url: "http://127.0.0.1:8080/getPopularAnsweredPolls",
+                    type: 'GET',
+                    contentType: 'application/json; charset=utf-8',
+                    data: {"email": currentEmail},
+                    success: function (resultData) {
+                        if (resultData !== "") {
+                            displayPopularAnsweredPolls(resultData);
+                        }
+                    },
+                    error: function () {
+                        alert("Please check your inputted data");
+                    },
+                    timeout: 120000,
+                });
+
+                const displayPopularAnsweredPolls = (characters) => {
+                    id = 0;
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.title}
+                                    </td>
+                                    <td>
+                                        ${character.authorUsername}
+                                    </td>
+                                    <td>
+                                        ${character.rate}
+                                    </td>
+                                    <td>
+                                        <a href="http://127.0.0.1:8080/checkPoll/${character.id}">
+                                            <button type="button" class="btn btn-primary">Check poll statistics</button>
+                                        </a>
+                                    </td>
+                                </tr>
+                            `;
+                        })
+                        .join('');
+                    popularAnsweredContent.innerHTML = htmlString;
+                };
+            </script>
+        </div>
+        <div class="col-md-6 col-md-offset-3">
             <h1>All unanswered polls</h1>
             <table class="table">
                 <thead class="thead">

@@ -14,4 +14,5 @@ public interface VoteService {
     Long getAnswerIdByUserIdAndPollId(Long userId, Long pollId);
     int getRateOfAnswer (Long answerId);
     boolean isThisPollAlreadyVotedByUser(Long userId, Long pollId);
+    boolean isThisUserSelectedThisAnswer(Long id, Long id1);
 }

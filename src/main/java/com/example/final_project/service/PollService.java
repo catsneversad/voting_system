@@ -12,4 +12,5 @@ public interface PollService {
     Poll getPollById(Long id);
     List<Poll> getPollsByAuthorId(Long authorId);
     List<Poll> getAllPolls();
+    int getRateOfPoll(Poll poll);
 }

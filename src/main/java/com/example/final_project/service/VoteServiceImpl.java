@@ -40,4 +40,9 @@ public class VoteServiceImpl implements VoteService {
     public boolean isThisPollAlreadyVotedByUser(Long userId, Long pollId) {
         return (voteRepository.isVotedByUser(userId, pollId) > 0);
     }
+
+    @Override
+    public boolean isThisUserSelectedThisAnswer(Long id, Long id1) {
+        return (voteRepository.isThisAnswerVotedByUser(id, id1) > 0);
+    }
 }

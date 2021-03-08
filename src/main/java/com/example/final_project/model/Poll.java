@@ -61,4 +61,14 @@ public class Poll implements Serializable {
     public void setAnswers(Collection<Answer> answers) {
         this.answers = answers;
     }
+
+    @Override
+    public String toString() {
+        return "Poll{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", author_id=" + author_id +
+                ", answers=" + answers +
+                '}';
+    }
 }

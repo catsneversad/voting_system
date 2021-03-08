@@ -3,12 +3,20 @@ package com.example.final_project.web.dto;
 public class PollDto {
     private Long id;
     private String title;
+    private int rate;
     private String authorUsername;
 
     public PollDto(Long id, String title, String authorUsername) {
         this.id = id;
         this.title = title;
         this.authorUsername = authorUsername;
+    }
+
+    public PollDto(Long id, String title, String authorUsername, int rate) {
+        this.id = id;
+        this.title = title;
+        this.authorUsername = authorUsername;
+        this.rate = rate;
     }
 
     public Long getId() {
@@ -33,5 +41,13 @@ public class PollDto {
 
     public void setAuthorUsername(String authorUsername) {
         this.authorUsername = authorUsername;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
     }
 }

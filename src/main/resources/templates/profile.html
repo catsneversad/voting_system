@@ -78,11 +78,41 @@
 
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
+                    <span class="input-group-text">Group</span>
+                </div>
+                <input type="text" id="userGroup" class="form-control" required autofocus="autofocus"/>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="updateGroup">Update</button>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
                     <span class="input-group-text">Interest</span>
                 </div>
-                <textarea id="userInterest" rows="5" class="form-control" required autofocus="autofocus"></textarea>
+                <select name="userInterest" id="userInterest" class="form-control">
+                    <option value="football">football</option>
+                    <option value="football">basketball</option>
+                    <option value="ballet">ballet</option>
+                    <option value="drawing">drawing</option>
+                    <option value="singing">singing</option>
+                </select>
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="button" id="updateInterest">Update</button>
+                </div>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Gender</span>
+                </div>
+                <select name="userInterest" id="userGender" class="form-control">
+                    <option value="female">female</option>
+                    <option value="male">male</option>
+                    <option value="nonbinary">nonbinary</option>
+                </select>
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" id="updateGender">Update</button>
                 </div>
             </div>
 
@@ -106,7 +136,7 @@
             <button id="submitUpdatePassword" class="btn btn-success">Update password</button>
             <script>
 
-                var updateInfo = function (firstName, secondName, age, interest) {
+                var updateInfo = function (firstName, secondName, age, interest, group, gender) {
                     currentEmail = $("#email").val();
                     jQuery.ajax({
                         url: "http://127.0.0.1:8080/updateInfo",
@@ -119,10 +149,12 @@
                                 "secondName": secondName,
                                 "age": age,
                                 "interest": interest,
+                                "group": group,
+                                "gender": gender,
                             },
 
                         success: function (resultData) {
-                            if (resultData == "success") {
+                            if (resultData === "success") {
                                 alert(resultData)
                                 location.replace("/profile")
                             } else {
@@ -138,22 +170,32 @@
 
                 $('#updateFirstName').click(function () {
                     const userFirstName = $("#userFirstName").val();
-                    updateInfo(userFirstName, null, null, null);
+                    updateInfo(userFirstName, null, null, null, null, null);
                 });
 
                 $('#updateSecondName').click(function () {
                     const userSecondName = $("#userSecondName").val();
-                    updateInfo(null, userSecondName, null, null);
+                    updateInfo(null, userSecondName, null, null, null, null);
                 });
 
                 $('#updateAge').click(function () {
                     const userAge = $("#userAge").val();
-                    updateInfo(null, null, userAge, null, null);
+                    updateInfo(null, null, userAge, null, null, null);
                 });
 
                 $('#updateInterest').click(function () {
                     const userInterest = $("#userInterest").val();
-                    updateInfo(null, null, null, userInterest);
+                    updateInfo(null, null, null, userInterest, null, null);
+                });
+
+                $('#updateGroup').click(function () {
+                    const userGroup = $("#userGroup").val();
+                    updateInfo(null, null, null, null, userGroup, null);
+                });
+
+                $('#updateGender').click(function () {
+                    const userGender = $("#userGender").val();
+                    updateInfo(null, null, null, null, null, userGender);
                 });
 
 
@@ -176,7 +218,7 @@
                             },
 
                         success: function (resultData) {
-                            if (resultData == "success") {
+                            if (resultData === "success") {
                                 alert(resultData)
                                 location.replace("/profile")
                             } else {

@@ -66,9 +66,258 @@
             <h6 class="pull-right">
                 All number of votes: '<span th:text="${sumOfRate}">sumOfRate</span>'
             </h6>
+            <br>
+            <button class="btn btn-primary" onclick="seeStatisticsByGroup()">See full statistics by groups</button>
+            <br><br>
+            <button class="btn btn-primary" onclick="seeStatisticsByInterest()">See full statistics by interests</button>
+            <br><br>
+            <button class="btn btn-primary" onclick="seeStatisticsByGender()">See full statistics by gender</button>
+
+            <table class="table" id="statisticsByGroup">
+            </table>
+
+            <table class="table" id="statisticsByInterest">
+            </table>
+
+            <table class="table" id="statisticsByGender">
+            </table>
             <script>
                 currentEmail = $("#email").val();
                 currentPollId = $("#pollId").val();
+                function seeStatisticsByGroup() {
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/isUserHasGroup",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail},
+                        success: function (resultData) {
+                            if (resultData === "noClub") {
+                                alert ("Please firstly provide your group");
+                            } else {
+                                getStatisticsByGroup();
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data1");
+                        },
+                        timeout: 120000,
+                    });
+                }
+                function getStatisticsByGroup() {
+                    clearTables()
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/getStatisticsOfPollByGroup",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail, "pollId": currentPollId},
+                        success: function (resultData) {
+                            if (resultData !== "") {
+                                displayStatisticsOfGroup(resultData);
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data");
+                        },
+                        timeout: 120000,
+                    });
+                }
+                const displayStatisticsOfGroup = (characters) => {
+                    const beginning = `
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Option value</th>
+                    <th scope="col">Groupmate emails</th>
+                </tr>
+                </thead>
+                <tbody>`;
+                    const ending = `</tbody>`
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            emails = displayUsers(character.answeredUsersEmailList);
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.value}
+                                    </td>
+                                    <td>`+emails+`
+                                    </td>
+                                </tr>
+                                `;
+                        })
+                        .join('');
+                    statisticsByGroup.innerHTML = beginning + htmlString + ending;
+                };
+                const displayStatisticsOfInterest = (characters) => {
+                    const beginning = `
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Option value</th>
+                    <th scope="col">Interestmate emails</th>
+                </tr>
+                </thead>
+                <tbody>`;
+                    const ending = `</tbody>`
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            emails = displayUsers(character.answeredUsersEmailList);
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.value}
+                                    </td>
+                                    <td>`+emails+`
+                                    </td>
+                                </tr>
+                                `;
+                        })
+                        .join('');
+                    statisticsByInterest.innerHTML = beginning + htmlString + ending;
+                };
+                const displayStatisticsOfGender = (characters) => {
+                    const beginning = `
+                <thead class="thead">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Option value</th>
+                    <th scope="col">Male Stats</th>
+                    <th scope="col">Female Stats</th>
+                    <th scope="col">Non-binary peoples Stats</th>
+                    <th scope="col">Unknown gender peoples Stats</th>
+                    <th scope="col">Option rate</th>
+                </tr>
+                </thead>
+                <tbody>`;
+                    const ending = `</tbody>`
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `
+                                <tr>
+                                    <th scope="row">${id}</th>
+                                    <td>
+                                        ${character.value}
+                                    </td>
+                                    <td>
+                                        ${character.statMale}
+                                    </td>
+                                    <td>
+                                        ${character.statFemale}
+                                    </td>
+                                    <td>
+                                        ${character.statNonbinary}
+                                    </td>
+                                    <td>
+                                        ${character.statUnknown}
+                                    </td>
+                                    <td>
+                                        ${character.rate}
+                                    </td>
+                                </tr>
+                                `;
+                        })
+                        .join('');
+                    statisticsByGender.innerHTML = beginning + htmlString + ending;
+                };
+                const displayUsers = (characters) => {
+                    const htmlString = characters
+                        .map((character, id) => {
+                            id += 1;
+                            return `<button class="btn btn-primary btn-sm" disabled>${character}</button>`;
+                        })
+                        .join('');
+                    return htmlString;
+                };
+
+                function clearTables() {
+                    $("#statisticsByGroup thead").remove();
+                    $("#statisticsByGroup tbody").remove();
+
+                    $("#statisticsByInterest thead").remove();
+                    $("#statisticsByInterest tbody").remove();
+                }
+
+                function seeStatisticsByInterest() {
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/isUserHasInterest",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail},
+                        success: function (resultData) {
+                            if (resultData === "noInterest") {
+                                alert ("Please firstly provide your interest");
+                            } else {
+                                getStatisticsByInterest();
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data1");
+                        },
+                        timeout: 120000,
+                    });
+                }
+                function getStatisticsByInterest() {
+                    clearTables()
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/getStatisticsOfPollByInterest",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail, "pollId": currentPollId},
+                        success: function (resultData) {
+                            if (resultData !== "") {
+                                displayStatisticsOfInterest(resultData);
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data");
+                        },
+                        timeout: 120000,
+                    });
+                }
+
+                function seeStatisticsByGender() {
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/isUserHasGender",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail},
+                        success: function (resultData) {
+                            if (resultData === "noGender") {
+                                alert ("Please firstly provide your gender");
+                            } else {
+                                getStatisticsByGender();
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data1");
+                        },
+                        timeout: 120000,
+                    });
+                }
+                function getStatisticsByGender() {
+                    clearTables()
+                    jQuery.ajax({
+                        url: "http://127.0.0.1:8080/getStatisticsOfPollByGender",
+                        type: 'GET',
+                        contentType: 'application/json; charset=utf-8',
+                        data: {"email": currentEmail, "pollId": currentPollId},
+                        success: function (resultData) {
+                            if (resultData !== "") {
+                                displayStatisticsOfGender(resultData);
+                            }
+                        },
+                        error: function () {
+                            alert("Please check your inputted data");
+                        },
+                        timeout: 120000,
+                    });
+                }
+
                 jQuery.ajax({
                     url: "http://127.0.0.1:8080/getStatisticsOfPoll",
                     type: 'GET',
@@ -84,7 +333,6 @@
                     },
                     timeout: 120000,
                 });
-
                 const displayStatistics = (characters) => {
                     id = 0;
                     const htmlString = characters
@@ -102,8 +350,7 @@
                                     </td>
                                 </tr>
                                 `;
-                            }
-                            else {
+                            } else {
                                 return `
                                 <tr>
                                     <th scope="row">${id}</th>

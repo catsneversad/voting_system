@@ -58,6 +58,43 @@ public class UserController {
         return "success";
     }
 
+    //isUserHasGroup
+    @GetMapping("/isUserHasGroup")
+    @ResponseBody
+    public String isUserHasGroup(@RequestParam(name = "email") String email) {
+
+        User user = userService.findByUsername(email);
+        if (user.getGroupName() != null) {
+            return "success";
+        } else {
+            return "noClub";
+        }
+    }
+
+    @GetMapping("/isUserHasInterest")
+    @ResponseBody
+    public String isUserHasInterest(@RequestParam(name = "email") String email) {
+
+        User user = userService.findByUsername(email);
+        if (user.getInterests() != null) {
+            return "success";
+        } else {
+            return "noInterest";
+        }
+    }
+
+    @GetMapping("/isUserHasGender")
+    @ResponseBody
+    public String isUserHasGender(@RequestParam(name = "email") String email) {
+
+        User user = userService.findByUsername(email);
+        if (user.getGender() != null) {
+            return "success";
+        } else {
+            return "noGender";
+        }
+    }
+
     @GetMapping("/getAllUsers")
     @ResponseBody
     public List<User> getAllUsers(@AuthenticationPrincipal UserDetails currentUser) {
@@ -76,9 +113,9 @@ public class UserController {
         List<User> admins = userService.getAllAdmins();
         List<User> newAdminList = new ArrayList<>();
         if (userService.isAdmin(user)) {
-            for (User to: admins) {
+            for (User to : admins) {
                 if (to != user) {
-                  newAdminList.add(to);
+                    newAdminList.add(to);
                 }
             }
             return newAdminList;
@@ -90,26 +127,28 @@ public class UserController {
     @GetMapping("/makeAdmin/{id}")
     public String makeAdmin(@AuthenticationPrincipal UserDetails currentUser,
                             @PathVariable("id") Long id) {
-        User editUser = userService.findUserById (id);
-        userService.makeAdmin (editUser);
+        User editUser = userService.findUserById(id);
+        userService.makeAdmin(editUser);
         return "redirect:/admin";
     }
 
     @GetMapping("/makeUser/{id}")
     public String makeUser(@AuthenticationPrincipal UserDetails currentUser,
-                            @PathVariable("id") Long id) {
-        User editUser = userService.findUserById (id);
-        userService.makeUser (editUser);
+                           @PathVariable("id") Long id) {
+        User editUser = userService.findUserById(id);
+        userService.makeUser(editUser);
         return "redirect:/admin";
     }
 
     @GetMapping("/updateInfo")
     @ResponseBody
     public String updateInfo(@RequestParam(name = "email") String email,
-                                 @RequestParam(name = "firstName") String firstName,
-                                 @RequestParam(name = "secondName") String secondName,
-                                 @RequestParam(name = "age") String age,
-                                 @RequestParam(name = "interest") String interest) {
+                             @RequestParam(name = "firstName") String firstName,
+                             @RequestParam(name = "secondName") String secondName,
+                             @RequestParam(name = "age") String age,
+                             @RequestParam(name = "interest") String interest,
+                             @RequestParam(name = "group") String group,
+                             @RequestParam(name = "gender") String gender) {
 
         User user = userService.findByUsername(email);
         if (!firstName.equals("")) {
@@ -124,7 +163,13 @@ public class UserController {
         if (!interest.equals("")) {
             user.setInterests(interest);
         }
-        System.out.println(firstName + ' ' + secondName + ' ' + age + ' ' + interest);
+        if (!group.equals("")) {
+            user.setGroupName(group);
+        }
+        if (!gender.equals("")) {
+            user.setGender(gender);
+        }
+        System.out.println(firstName + ' ' + secondName + ' ' + age + ' ' + interest + ' ' + group + ' ' + gender);
         userService.save(user);
         return "success";
     }

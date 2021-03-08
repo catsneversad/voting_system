@@ -27,6 +27,8 @@ public class User {
 
 	private String interests;
 
+	private String gender;
+
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinTable(
 			name = "users_roles",
@@ -49,7 +51,7 @@ public class User {
 		this.roles = roles;
 	}
 
-	public User(String firstName, String lastName, String email, String password, String groupName, int age, String interests, Collection<Role> roles) {
+	public User(String firstName, String lastName, String email, String password, String groupName, int age, String interests, String gender, Collection<Role> roles) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -59,6 +61,7 @@ public class User {
 		this.age = age;
 		this.interests = interests;
 		this.roles = roles;
+		this.gender = gender;
 	}
 
 	public Long getId() {
@@ -120,5 +123,28 @@ public class User {
 
 	public void setInterests(String interests) {
 		this.interests = interests;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	@Override
+	public String toString() {
+		return "User{" +
+				"id=" + id +
+				", firstName='" + firstName + '\'' +
+				", lastName='" + lastName + '\'' +
+				", email='" + email + '\'' +
+				", password='" + password + '\'' +
+				", groupName='" + groupName + '\'' +
+				", age=" + age +
+				", interests='" + interests + '\'' +
+				", roles=" + roles +
+				'}';
 	}
 }
